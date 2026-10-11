@@ -1,0 +1,101 @@
+name: Build and deploy
+
+# kuartalventures.com deploys WITHOUT SSH and without any secrets:
+#
+#   1. On every pull request and push, this builds the site (Composer +
+#      npm) and runs the page tests.
+#   2. On a pull request, the built site is kept as a downloadable
+#      artifact ("site-preview", 3 days) for checking.
+#   3. On a push to `main` that passes, it publishes the finished,
+#      ready-to-run site (vendor/ and public/build included) to the
+#      `deploy` branch, as a single fresh commit.
+#   4. Hostinger's Git integration (hPanel → Advanced → Git) pulls the
+#      `deploy` branch into public_html, triggered by its webhook.
+#
+# Nobody, human or AI, should commit to `deploy` by hand: this workflow
+# is the only thing that writes it, and it replaces it on every run.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-and-deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install PHP dependencies (with test tools)
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      - name: Build CSS and JS
+        run: |
+          npm install --no-audit --no-fund
+          npm run build
+
+      - name: Run page tests
+        run: php artisan test
+
+      - name: Compile every Blade view (catches template errors)
+        run: php artisan view:cache && php artisan view:clear
+
+      - name: Assemble the production site
+        run: |
+          composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+          mkdir -p "$RUNNER_TEMP/site"
+          rsync -a ./ "$RUNNER_TEMP/site/" \
+            --exclude .git --exclude .github --exclude node_modules --exclude tests \
+            --exclude .ai --exclude docs --exclude deploy --exclude '.env' \
+            --exclude 'storage/logs/*.log' --exclude 'storage/app/private/.app-key' \
+            --exclude 'public/hot'
+          cp deploy/root.htaccess "$RUNNER_TEMP/site/.htaccess"
+          # public/build and vendor are git-ignored on main; they must ship here.
+          printf '/node_modules\n/.env\n/storage/app/private/.app-key\n' > "$RUNNER_TEMP/site/.gitignore"
+          cat > "$RUNNER_TEMP/site/DEPLOY.md" <<MSG
+          # Built site — do not edit
+          Generated from main@${GITHUB_SHA} by .github/workflows/build-and-deploy.yml.
+          Hostinger pulls this branch into public_html. Edit main instead.
+          MSG
+
+      - name: Keep a copy of a pull request's build for previewing
+        if: github.event_name == 'pull_request'
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-preview
+          path: ${{ runner.temp }}/site
+          include-hidden-files: true
+          retention-days: 3
+
+      - name: Publish to the deploy branch
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        working-directory: ${{ runner.temp }}/site
+        run: |
+          git init -q -b deploy
+          git config user.name "kuartal-deploy-bot"
+          git config user.email "hello@kuartal.id"
+          git add -A -f
+          git commit -q -m "Built site from main@${GITHUB_SHA::7}"
+          git remote add origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+          git push -q --force origin deploy
