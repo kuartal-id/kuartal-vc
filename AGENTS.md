@@ -37,7 +37,7 @@ Owner: Diemas (PT Kuartal Financial Group).
 - No auth by design — don't add login, tracking or forms that collect personal data without Diemas's approval. Incubator applications go by email (`mailto:`) on purpose.
 - Website copy follows the Kuartal brand tone ("a smart friend who works in finance": plain words, short sentences). Thesis content lives in `config/ventures.php` and must match the Kuartal Ventures Investment Thesis doc.
 - Keep every `[SUPPLY: ...]` and `[VERIFY: ...]` flag until Diemas supplies or confirms the content.
-- **Never commit to the `deploy` branch.** Only `.github/workflows/build-and-deploy.yml` writes it.
+- **Never commit to the `deploy` branch.** Only `.github/workflows/build-and-deploy.yml` writes it (and the `preview` branch, built from pull requests).
 
 ## Protected paths (need the `owner-approved` label)
 
