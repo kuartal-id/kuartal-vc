@@ -3,7 +3,11 @@
     "name": "kuartal-id/kuartalgroup",
     "type": "project",
     "description": "kuartalgroup.com — Investor Relations site for Kuartal Group.",
-    "keywords": ["laravel", "framework", "kuartal"],
+    "keywords": [
+        "laravel",
+        "framework",
+        "kuartal"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.3",
@@ -51,6 +55,9 @@
         "allow-plugins": {
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
+        },
+        "platform": {
+            "php": "8.3.0"
         }
     },
     "minimum-stability": "stable",
