@@ -1,0 +1,468 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+/* Class-based dark mode: theme-toggle.js adds/removes .dark on <html>,
+   so dark: variants must key off that class rather than the OS preference. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+    /* Kuartal type system:
+       - display: logo + headings (h1-h4) — Poppins
+       - subhead: subheadings, quotes, eyebrows, nav, buttons — Poppins
+       - sans: body copy and smaller text — Arial Nova (falls back to Arial,
+         a system font, so this needs no web-font import)
+    */
+    --font-display: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-subhead: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+    --font-sans: 'Arial Nova', Arial, Helvetica, ui-sans-serif, system-ui, sans-serif;
+
+    /* Kuartal brand palette — identical across all 5 properties */
+    --color-navy-50: #eef3f4;
+    --color-navy-100: #d3e0e3;
+    --color-navy-200: #a7c1c8;
+    --color-navy-300: #7aa2ac;
+    --color-navy-400: #4e8390;
+    --color-navy-500: #2c5f6c;
+    --color-navy-600: #1f4a55;
+    --color-navy-700: #18333d;
+    --color-navy-800: #122730;
+    --color-navy-900: #0b1319;
+    --color-navy: #18333d;
+    --color-navy-deep: #0b1319;
+
+    --color-green-50: #eafcf1;
+    --color-green-100: #c9f6da;
+    --color-green-200: #93ecb6;
+    --color-green-300: #5fe092;
+    --color-green-400: #36cc64;
+    --color-green-500: #28a852;
+    --color-green-600: #1f8642;
+    --color-green-700: #186833;
+    --color-green-800: #134f27;
+    --color-green-900: #0e3b1d;
+    --color-green: #36cc64;
+
+    --color-gray-bg: #f7f9f9;
+    --color-gray-border: #e1e8ed;
+    --color-gray-muted: #6c7a86;
+    --color-gray-muted-dark: #5b6b74;
+
+    --color-surface: #f7f9f9;
+    --color-surface-light: #ffffff;
+    --color-surface-dark: #0f1c22;
+    --color-surface-dark-alt: #152730;
+
+    --radius-card: 14px;
+    --radius-pill: 999px;
+
+    --shadow-card: 0 2px 10px rgba(11, 19, 25, 0.06);
+    --shadow-card-dark: 0 2px 14px rgba(0, 0, 0, 0.35);
+}
+
+@layer base {
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-surface text-navy-900 font-sans antialiased transition-colors duration-200;
+    }
+
+    .dark body {
+        @apply bg-surface-dark text-gray-bg;
+    }
+
+    h1, h2, h3, h4 {
+        @apply font-display font-semibold text-navy tracking-tight;
+    }
+
+    h5, h6 {
+        @apply font-subhead font-semibold text-navy;
+    }
+
+    blockquote {
+        @apply font-subhead text-lg italic text-navy/80;
+    }
+
+    .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+        @apply text-white;
+    }
+
+    .dark blockquote {
+        @apply text-white/80;
+    }
+
+    ::selection {
+        @apply bg-green-200 text-navy-900;
+    }
+}
+
+@layer components {
+    /* Widened 2026-09-29 (1180px felt "smooshed" in the centre of wide
+       screens, especially combined with the max-w-3xl inner wrapper most
+       page sections used, which has since been loosened to max-w-4xl —
+       see the sweep across resources/views for that change). */
+    .k-container {
+        @apply mx-auto w-full px-6 md:px-10;
+        max-width: 1440px;
+    }
+
+    /* Wider container for the header and footer, which should read as
+       fairly full-width rather than matching the narrower content
+       measure used inside page sections. */
+    .k-container-wide {
+        @apply mx-auto w-full px-6 md:px-10;
+        max-width: 1720px;
+    }
+
+    .k-section {
+        @apply py-16 md:py-24;
+    }
+
+    /* Logo wordmark — display font, not a heading tag in the nav */
+    .k-logo {
+        @apply font-display text-lg font-semibold text-navy dark:text-white;
+    }
+
+    .k-btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-pill px-6 py-3
+               font-subhead font-medium text-sm tracking-wide transition-all duration-150
+               bg-green-400 text-navy-900 hover:-translate-y-0.5
+               shadow-sm hover:shadow-card;
+    }
+    .k-btn-outline {
+        @apply inline-flex items-center justify-center gap-2 rounded-pill px-6 py-3
+               font-subhead font-medium text-sm tracking-wide transition-all duration-150
+               border border-navy/20 text-navy hover:border-green-400 hover:text-green-400
+               dark:border-white/20 dark:text-white dark:hover:border-green-400 dark:hover:text-green-400;
+    }
+    .k-btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 rounded-pill px-6 py-3
+               font-subhead font-medium text-sm tracking-wide transition-all duration-150
+               text-navy/70 hover:text-navy dark:text-white/70 dark:hover:text-white;
+    }
+
+    .k-card {
+        @apply rounded-card border border-gray-border bg-white p-6 shadow-card
+               transition-colors duration-200
+               dark:border-white/10 dark:bg-surface-dark-alt dark:shadow-card-dark;
+    }
+
+    .k-eyebrow {
+        @apply font-subhead text-xs font-bold text-green-400;
+    }
+
+    .k-navlink {
+        @apply font-subhead text-sm font-medium text-navy/80 hover:text-green-400 transition-colors
+               dark:text-white/80 dark:hover:text-green-400;
+    }
+
+    .k-rule {
+        @apply border-t border-gray-border dark:border-white/10;
+    }
+
+    /* Category banner links on the Store page — a photo card at a fixed
+       1000x500 (2:1) ratio that points to the storefront
+       (store.kuartal.id, or karias.id for Art and Collectibles). mt-8
+       gives it real breathing room from the copy above it. The photo
+       (.k-store-banner-bg, an <img>) and the darkening overlay behind the
+       text are both deliberately z-0/z-[1], not negative: a negative
+       z-index escapes this element's own stacking context except while
+       :hover applies its transform (which creates one), so they'd only
+       render on hover. Un-negative, DOM order alone keeps them behind the
+       text every time. */
+    .k-store-banner {
+        @apply relative block overflow-hidden rounded-card mt-8
+               transition-transform duration-200 hover:-translate-y-0.5;
+        aspect-ratio: 2 / 1;
+    }
+    .k-store-banner-bg {
+        @apply absolute inset-0 z-0 h-full w-full object-cover;
+    }
+    .k-store-banner-overlay {
+        @apply absolute inset-0 z-[1];
+        background: linear-gradient(0deg, var(--color-navy-900) 0%, rgba(11, 19, 25, 0.55) 55%, rgba(11, 19, 25, 0.05) 100%);
+    }
+    .k-store-banner-content {
+        @apply relative z-10 flex h-full flex-col items-start justify-end gap-2
+               px-6 py-6 sm:py-8;
+    }
+    .k-store-banner-text {
+        @apply font-subhead text-lg sm:text-xl font-semibold text-white;
+    }
+    .k-store-banner-cta {
+        @apply font-subhead text-sm font-medium text-green-400;
+    }
+
+    /* Solid-white button for use over the dark video hero */
+    .k-btn-white {
+        @apply inline-flex items-center justify-center gap-2 rounded-pill px-6 py-3
+               font-subhead font-medium text-sm tracking-wide transition-all duration-150
+               bg-white text-navy-900 hover:bg-green-400 hover:-translate-y-0.5
+               shadow-sm hover:shadow-card;
+    }
+    .k-btn-outline-white {
+        @apply inline-flex items-center justify-center gap-2 rounded-pill px-6 py-3
+               font-subhead font-medium text-sm tracking-wide transition-all duration-150
+               border border-white/50 text-white hover:border-green-400 hover:text-green-400;
+    }
+
+    /* Fullscreen hero background: animated gradient placeholder that sits
+       behind (and, once supplied, under) a real <video data-hero-video>
+       loop — see resources/views/home.blade.php for where to point the
+       video src at real footage. */
+    .k-hero-bg {
+        @apply absolute inset-0 -z-10;
+        background: linear-gradient(120deg, var(--color-navy-900), var(--color-navy-700) 45%, var(--color-navy-500) 100%);
+        background-size: 200% 200%;
+        animation: k-hero-drift 18s ease-in-out infinite;
+    }
+
+    .k-hero-overlay {
+        @apply absolute inset-0 -z-10 bg-navy-900/45;
+    }
+
+    /* Horizontal snap carousel — used for the apps/products row */
+    .k-carousel {
+        @apply flex gap-5 overflow-x-auto pb-4;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    .k-carousel::-webkit-scrollbar {
+        height: 6px;
+    }
+    .k-carousel::-webkit-scrollbar-thumb {
+        @apply bg-gray-border rounded-pill dark:bg-white/15;
+    }
+    .k-carousel-item {
+        @apply shrink-0 snap-start;
+        width: 280px;
+    }
+
+    /* Single-row "vertical" cards — a tall image panel over a text
+       panel, laid out in one horizontally-scrolling row (same
+       scroll-snap mechanics as .k-carousel, just a narrower, taller
+       card). Used by /membership's tier pricing cards. */
+    .k-audience-row {
+        @apply flex gap-5 overflow-x-auto pb-4;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    .k-audience-row::-webkit-scrollbar {
+        height: 6px;
+    }
+    .k-audience-row::-webkit-scrollbar-thumb {
+        @apply bg-gray-border rounded-pill dark:bg-white/15;
+    }
+
+    /* "Made for you, whoever you are" audience cards — same tall
+       image-over-text card as above, but laid out as a centred grid
+       that fills the container's full width (one row on desktop, since
+       there are only 4 of them) rather than a fixed-width scrolling
+       row, per the founder (2026-09-30). Used by
+       partials/audience-row.blade.php on /who-we-serve and
+       /membership. */
+    .k-audience-grid {
+        @apply grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4;
+    }
+    .k-audience-card {
+        @apply flex w-full flex-col overflow-hidden rounded-card bg-white shadow-card
+               dark:bg-surface-dark-alt;
+    }
+    .k-audience-card-image {
+        @apply flex aspect-[3/4] w-full items-center justify-center;
+    }
+
+    /* Full-bleed banner band — a section-height gradient (or, once
+       supplied, photo/video) panel with text over a darkening overlay,
+       edge to edge with no side padding. Used to break up the otherwise
+       uniform /explore service sections (2026-09-30). */
+    .k-service-banner {
+        @apply relative flex w-full items-center justify-center overflow-hidden;
+        min-height: 420px;
+    }
+    .k-service-banner-overlay {
+        @apply absolute inset-0 z-0;
+        background: linear-gradient(180deg, rgba(11, 19, 25, 0.15) 0%, rgba(11, 19, 25, 0.55) 100%);
+    }
+
+    /* Plain gradient media frame, standing in for a photo/video that
+       hasn't been supplied yet, used across the /explore service
+       sections in place of a photo. */
+    .k-media-frame {
+        @apply flex items-center justify-center overflow-hidden rounded-card;
+    }
+
+    /* Membership tier pricing cards — a single scrolling row (reuses
+       .k-audience-row's scroll-snap mechanics), each card a gradient
+       price band over a features list. Used on /membership in place of
+       the old tier comparison table. */
+    .k-tier-card {
+        @apply shrink-0 snap-start flex flex-col overflow-hidden rounded-card bg-white
+               shadow-card dark:bg-surface-dark-alt;
+        width: 280px;
+    }
+    .k-tier-card-band {
+        @apply flex flex-col items-center justify-center gap-1 px-6 py-8 text-center;
+    }
+
+    /* "Dock"-style icon grid — used on /explore in place of a plain
+       apps/tools/services table. Each tile scales up on hover (JS in
+       resources/js/app-grid.js adds a smoother proximity-based version
+       of the same effect on pointer devices) and reveals a detail
+       popup, but only once the visitor lingers — the popup's
+       transition-delay is what makes it wait for a "stay", not just a
+       pass-through hover. */
+    .k-app-grid {
+        @apply grid grid-cols-3 gap-x-4 gap-y-10 sm:grid-cols-4 sm:gap-x-6 md:grid-cols-5;
+    }
+
+    .k-app-tile {
+        @apply relative flex flex-col items-center gap-3;
+    }
+
+    .k-app-tile-icon {
+        @apply h-16 w-16 rounded-2xl shadow-card transition-transform duration-300 ease-out md:h-20 md:w-20
+               dark:shadow-card-dark;
+    }
+
+    .k-app-tile:hover .k-app-tile-icon {
+        transform: scale(1.18);
+    }
+
+    .k-app-tile-name {
+        @apply text-center font-subhead text-sm font-medium text-navy transition-transform duration-300 ease-out
+               dark:text-white;
+    }
+
+    .k-app-tile:hover .k-app-tile-name {
+        transform: scale(1.06);
+    }
+
+    .k-app-tile-popup {
+        @apply absolute left-1/2 top-full z-20 mt-3 w-60 -translate-x-1/2 rounded-card border
+               border-gray-border bg-white p-4 text-left shadow-card
+               dark:border-white/10 dark:bg-surface-dark-alt dark:shadow-card-dark;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+    }
+
+    .k-app-tile:hover .k-app-tile-popup {
+        opacity: 1;
+        visibility: visible;
+        transition: opacity 0.2s ease 0.45s, visibility 0s linear 0.45s;
+    }
+
+    /* Pinned, scroll-driven video hero — N full-screen "slides" that
+       cross-fade into one another as the visitor scrolls through a tall
+       wrapper ([data-scroll-hero], height set inline to N*100vh) with a
+       sticky viewport-height stage inside it. See
+       resources/js/scroll-hero.js for the scroll math and
+       resources/views/about.blade.php for the markup that uses it. */
+    .k-scrollhero-stage {
+        @apply sticky top-0 h-screen w-full overflow-hidden;
+    }
+    .k-scrollhero-video {
+        @apply absolute inset-0 h-full w-full object-cover -z-10 opacity-0 transition-opacity duration-500;
+    }
+    .k-scrollhero-video.is-active {
+        @apply opacity-100;
+        z-index: -5;
+    }
+    .k-scrollhero-slide {
+        @apply absolute inset-0 flex flex-col items-center justify-center text-center px-6
+               opacity-0 pointer-events-none transition-opacity duration-500;
+    }
+    .k-scrollhero-slide.is-active {
+        @apply opacity-100 pointer-events-auto;
+    }
+    .k-scrollhero-dots {
+        @apply absolute right-5 md:right-8 top-1/2 -translate-y-1/2 z-20 flex flex-col gap-3;
+    }
+    .k-scrollhero-dot {
+        @apply h-2.5 w-2.5 rounded-full bg-white/35 transition-all duration-200 cursor-pointer;
+    }
+    .k-scrollhero-dot.is-active {
+        @apply bg-white;
+        height: 1.5rem;
+    }
+}
+
+@layer components {
+    /* Information Centre row (homepage) — a round icon over a label,
+       linking out to another Kuartal entry point. Same "grows on hover"
+       feel as .k-app-tile but simpler: no popup, just a link. */
+    .k-info-tile {
+        @apply flex flex-col items-center gap-3 rounded-card border border-gray-border bg-white px-6 py-8
+               text-center shadow-card transition-all duration-200 hover:-translate-y-1 hover:border-green-400
+               dark:border-white/10 dark:bg-surface-dark-alt dark:shadow-card-dark;
+    }
+    .k-info-tile-icon {
+        @apply flex h-14 w-14 items-center justify-center rounded-full bg-green-50 text-navy
+               dark:bg-green-400/10 dark:text-green-300;
+    }
+    .k-info-tile-label {
+        @apply font-subhead text-sm font-medium text-navy dark:text-white;
+    }
+
+    /* Interactive History timeline (Company Info page) — a horizontal
+       line with one dot per milestone; the dot under the active card
+       grows and fills green. Cards scroll one-at-a-time via the
+       left/right buttons, in sync with the dot (resources/js/timeline.js). */
+    .k-timeline-track {
+        @apply relative mx-auto mb-12 hidden max-w-4xl items-center md:flex;
+    }
+    .k-timeline-line {
+        @apply absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gray-border dark:bg-white/15;
+    }
+    .k-timeline-dot {
+        @apply relative z-10 h-3 w-3 shrink-0 rounded-full border-2 border-gray-border bg-white transition-all duration-300
+               dark:border-white/25 dark:bg-surface-dark;
+    }
+    .k-timeline-dot.is-active {
+        @apply border-green-400 bg-green-400;
+        transform: scale(1.4);
+    }
+    .k-timeline-year {
+        @apply absolute -top-7 left-1/2 -translate-x-1/2 whitespace-nowrap font-subhead text-xs font-semibold text-gray-muted
+               transition-colors dark:text-white/50;
+    }
+    .k-timeline-dot.is-active + .k-timeline-year,
+    .k-timeline-year.is-active {
+        @apply text-green-500 dark:text-green-400;
+    }
+
+    .k-timeline-cards {
+        @apply flex gap-5 overflow-x-auto scroll-smooth pb-4;
+        scroll-snap-type: x mandatory;
+        -webkit-overflow-scrolling: touch;
+    }
+    .k-timeline-cards::-webkit-scrollbar {
+        height: 6px;
+    }
+    .k-timeline-cards::-webkit-scrollbar-thumb {
+        @apply bg-gray-border rounded-pill dark:bg-white/15;
+    }
+    .k-timeline-card {
+        @apply shrink-0 snap-start rounded-card border border-gray-border bg-white p-6 shadow-card
+               dark:border-white/10 dark:bg-surface-dark-alt dark:shadow-card-dark;
+        width: 300px;
+    }
+
+    /* Simple content cards used across Financials/Events/Portfolio
+       listing rows (report/event name + date/meta + a link). */
+    .k-list-card {
+        @apply flex items-center justify-between gap-4 rounded-card border border-gray-border bg-white
+               px-6 py-5 shadow-card transition-colors hover:border-green-400
+               dark:border-white/10 dark:bg-surface-dark-alt dark:shadow-card-dark;
+    }
+}
+
+@keyframes k-hero-drift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}

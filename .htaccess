@@ -1,0 +1,16 @@
+# kuartalventures.com — placed at the root of the `deploy` branch (which
+# Hostinger's Git integration pulls into public_html). Every request is
+# handed to Laravel's public/ folder, so nothing else in the app (config,
+# storage, vendor, the generated app key) can ever be fetched by URL.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Belt and braces if mod_rewrite were ever off: refuse everything
+# except the front controller's folder.
+<IfModule !mod_rewrite.c>
+    Require all denied
+</IfModule>
+
+Options -Indexes
