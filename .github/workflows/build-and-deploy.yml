@@ -70,7 +70,7 @@ jobs:
             --exclude .git --exclude .github --exclude node_modules --exclude tests \
             --exclude .ai --exclude docs --exclude deploy --exclude '.env' \
             --exclude 'storage/logs/*.log' --exclude 'storage/app/private/.app-key' \
-            --exclude 'public/hot'
+            --exclude 'public/hot' --exclude .phpunit.result.cache --exclude .phpunit.cache
           cp deploy/root.htaccess "$RUNNER_TEMP/site/.htaccess"
           # public/build and vendor are git-ignored on main; they must ship here.
           printf '/node_modules\n/.env\n/storage/app/private/.app-key\n' > "$RUNNER_TEMP/site/.gitignore"
